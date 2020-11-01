@@ -62,11 +62,18 @@ func msgReceived(s *discordgo.Session, m *discordgo.MessageCreate) {
   fmt.Println(m.Content + " by " + nickname)
 
   if strings.Contains(m.Content, "!shgei") {
-    out,err := exec.Command("echo", "hello").Output()
+    messageString := string(m.Content)
+    fmt.Println(messageString)
+    cmdString := strings.Replace(messageString,"!shgei ","",-1)
+
+    out,err := exec.Command("sh","-c", cmdString, "2>&1").Output()
     if err != nil {
       fmt.Println("error:start\n", err)
+      s.ChannelMessageSend(m.ChannelID, "エラー")
+      s.ChannelMessageSend(m.ChannelID, string(out))
       return
     }
-    s.ChannelMessageSend(m.ChannelID,string(out))
+    s.ChannelMessageSend(m.ChannelID, "出力")
+    s.ChannelMessageSend(m.ChannelID, "```\n" + string(out) + "\n```")
   }
 }
