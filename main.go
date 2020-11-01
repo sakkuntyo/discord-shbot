@@ -60,10 +60,10 @@ func msgReceived(s *discordgo.Session, m *discordgo.MessageCreate) {
     nickname = member.Nick
   }
   fmt.Println(m.Content + " by " + nickname)
+  sourceChannel,_ := s.State.Channel(m.ChannelID)
 
-  if strings.Contains(m.Content, "!shgei") {
+  if strings.Contains(m.Content, "!shgei") || strings.Contains(sourceChannel.Name,"シェル芸"){
     messageString := string(m.Content)
-    fmt.Println(messageString)
     cmdString := strings.Replace(messageString,"!shgei ","",-1)
 
     out,err := exec.Command("sh","-c", cmdString, "2>&1").Output()
