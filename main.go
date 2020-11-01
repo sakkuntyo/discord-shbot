@@ -2,11 +2,13 @@ package main
 import (
   "fmt"
   "os"
+  "os/exec"
   "os/signal"
   "syscall"
   "github.com/bwmarrin/discordgo"
   "io/ioutil"
   "encoding/json"
+  "strings"
 )
 
 // 構造体定義
@@ -59,7 +61,12 @@ func msgReceived(s *discordgo.Session, m *discordgo.MessageCreate) {
   }
   fmt.Println(m.Content + " by " + nickname)
 
-  if m.Content == "hello" {
-    s.ChannelMessageSend(m.ChannelID,"hello")
+  if strings.Contains(m.Content, "!shgei") {
+    out,err := exec.Command("echo", "hello").Output()
+    if err != nil {
+      fmt.Println("error:start\n", err)
+      return
+    }
+    s.ChannelMessageSend(m.ChannelID,string(out))
   }
 }
