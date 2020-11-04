@@ -9,7 +9,6 @@ import (
   "io/ioutil"
   "encoding/json"
   "strings"
-  "unicode/utf8"
 )
 
 // 構造体定義
