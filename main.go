@@ -66,14 +66,15 @@ func msgReceived(s *discordgo.Session, m *discordgo.MessageCreate) {
     messageString := string(m.Content)
     cmdString := strings.Replace(messageString,"!shgei ","",-1)
 
-    out,err := exec.Command("sh","-c", cmdString, "2>&1").Output()
+    out,err := exec.Command("bash","-c", cmdString).CombinedOutput()
     if err != nil {
       fmt.Println("error:start\n", err)
-      s.ChannelMessageSend(m.ChannelID, "エラー")
-      s.ChannelMessageSend(m.ChannelID, string(out))
+      s.ChannelMessageSend(m.ChannelID, cmdString)
+      s.ChannelMessageSend(m.ChannelID, "```\n" + string(out) + "\n```")
+      s.ChannelMessageSend(m.ChannelID, "```\n" + err.Error() + "\n```")
       return
     }
-    s.ChannelMessageSend(m.ChannelID, "出力")
+    s.ChannelMessageSend(m.ChannelID, cmdString)
     s.ChannelMessageSend(m.ChannelID, "```\n" + string(out) + "\n```")
   }
 }
