@@ -9,6 +9,7 @@ import (
   "io/ioutil"
   "encoding/json"
   "strings"
+  "unicode/utf8"
 )
 
 // 構造体定義
@@ -67,14 +68,27 @@ func msgReceived(s *discordgo.Session, m *discordgo.MessageCreate) {
     cmdString := strings.Replace(messageString,"!shgei ","",-1)
 
     out,err := exec.Command("bash","-c", cmdString).CombinedOutput()
+    sendMessageRunes := []rune(string(out))
     if err != nil {
       fmt.Println("error:start\n", err)
       s.ChannelMessageSend(m.ChannelID, cmdString)
-      s.ChannelMessageSend(m.ChannelID, "```\n" + string(out) + "\n```")
+      for i := 0; i < len(sendMessageRunes); i += 1900 {
+        if i+1900 < len(sendMessageRunes) {
+          s.ChannelMessageSend(m.ChannelID, "```\n" + string(sendMessageRunes[i:(i + 1900)]) + "\n```")
+	} else {
+          s.ChannelMessageSend(m.ChannelID, "```\n" + string(sendMessageRunes[i:]) + "\n```")
+	}
+      }
       s.ChannelMessageSend(m.ChannelID, "```\n" + err.Error() + "\n```")
       return
     }
     s.ChannelMessageSend(m.ChannelID, cmdString)
-    s.ChannelMessageSend(m.ChannelID, "```\n" + string(out) + "\n```")
+    for i := 0; i < len(sendMessageRunes); i += 1900 {
+      if i+1900 < len(sendMessageRunes) {
+        s.ChannelMessageSend(m.ChannelID, "```\n" + string(sendMessageRunes[i:(i + 1900)]) + "\n```")
+      } else {
+        s.ChannelMessageSend(m.ChannelID, "```\n" + string(sendMessageRunes[i:]) + "\n```")
+      }
+    }
   }
 }
